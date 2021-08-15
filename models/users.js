@@ -1,13 +1,13 @@
-// table model
+// User table model
 
 const DT = require("sequelize").DataTypes;
 
 module.exports = (db) => {
   return db.define("users", {
     userId: { type: DT.INTEGER, primaryKey: true, autoIncrement: true },
-    productImage: DT.STRING,
-    productTitle: DT.STRING,
-    productPrice: DT.INTEGER,
-    productDescription: DT.STRING,
+    firstName: DT.STRING,
+    lastName: DT.STRING,
+    userName: DT.STRING,
+    userEmail: DT.STRING,
   });
 };

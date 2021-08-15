@@ -2,7 +2,7 @@ const server = require("express")();
 server.use(require("body-parser").json());
 server.use(require("cors")());
 const { Connection } = require("pg");
-const { db, users } = require("./models/db.js"); // users from db.js
+const { db, users, products } = require("./models/db.js"); // users from db.js
 // const Env = require('dotenv').config()
 
 server.get("/", (req, res) => {
@@ -18,6 +18,15 @@ server.post("/users", async (req, res) => {
   res.send({ users: await users.findAll() }); // send back all user
 });
 // prove in postman => send data to user endpoint
+
+//Products Endpoints
+server.get("/products", async (res, req) => {
+  res.send({ products: await products.findAll() });
+});
+server.post("/products", async (req, res) => {
+  await products.create(req.body); //  create user
+  res.send({ products: await products.findAll() }); // send back all user
+});
 
 // login endpoints
 server.use("/Login", (req, res) => {

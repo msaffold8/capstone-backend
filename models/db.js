@@ -7,19 +7,18 @@ const db = new Sequelize(
   }
 );
 
-// load users.js => sync() table model into database 
+// load products users files => sync() table model into database 
 const users = require("./users")(db);
+const products = require("./products")(db); 
 
 // test db connection - await authentication & log
 const connectToDB = async () => {
   await db.authenticate();
   console.log("Gift depot database connected successfully");
 
-  db.sync(); 
+  db.sync();
 };
 connectToDB();
 
-
-
 // export db model for server.js/user.js files
-module.exports = { db, users };
+module.exports = { db, users, products };
