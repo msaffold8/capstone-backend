@@ -10,6 +10,7 @@ const db = new Sequelize(
 // load products users files => sync() table model into database 
 const users = require("./users")(db);
 const products = require("./products")(db); 
+const wishList = require("./wishList")(db);
 
 // test db connection - await authentication & log
 const connectToDB = async () => {
@@ -21,4 +22,4 @@ const connectToDB = async () => {
 connectToDB();
 
 // export db model for server.js/user.js files
-module.exports = { db, users, products };
+module.exports = { db, users, products, wishList };

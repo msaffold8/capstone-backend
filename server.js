@@ -4,6 +4,8 @@ server.use(require("cors")());
 const { response, request } = require("express");
 const { Connection } = require("pg");
 const { db, users, products, wishList } = require("./models/db.js"); //from db.js
+
+
 // const Env = require('dotenv').config()
 
 server.get("/", (req, res) => {
