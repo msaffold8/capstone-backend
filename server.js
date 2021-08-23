@@ -59,6 +59,29 @@ server.post("/Login", (req, res) => {
     token: "test123",
   });
 });
+
+//Cart endpoints - Any call to endpoint should return newly updated cart
+server.get("/cart", async (req, res) => {// GET current state of cart
+  res.send({ products: await Product.findAll() }); 
+});
+server.post("/cart", async (req, res) => { //create cart item 
+  await Product.create(req.body); //  / Items Array with unique product ID, name, price, thumbnail 
+  res.send({ products: await Product.findAll({ items: [{
+    productID: productID, 
+    productTitle: productTitle, 
+    productPrice: productPrice,
+  }
+  ]}) }); 
+});
+server.put("/cart", async (req, res) => {
+  await Product.create(req.body); // PUT to add to current state 
+  res.send({ products: await Product.findAll() }); // send back all products
+});
+server.delete("/cart", async (req, res) => {
+  await Product.create(req.body); // DELETE change state of cart
+  res.send({ products: await Product.findAll() }); // send back all products
+});
+
 server.listen(3002, () => {
   console.log("Server is running on 3002");
 });
