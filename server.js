@@ -48,6 +48,10 @@ server.get("/wishlist", (res, req) => {
 });
 // Endpoint to add product to a specific wish list
 
+
+
+
+
 // login endpoints
 server.use("/Login", (req, res) => {
   res.send({
@@ -61,17 +65,36 @@ server.post("/Login", (req, res) => {
 });
 
 //Cart endpoints - Any call to endpoint should return newly updated cart
-server.get("/cart", async (req, res) => {// GET current state of cart
-  res.send({ products: await Product.findAll() }); 
+server.get("/cart", async (req, res) => {
+  const items = await Product.findAll({
+    })
+    res.send({
+      items: items.map((item) => {
+            return {
+              cartItemID: item.productsId,
+              productTitle: item.productTitle,
+              productPrice: item.productPrice,
+              productImage: item.productImage
+            }  
+      }),
+    });
 });
-server.post("/cart", async (req, res) => { //create cart item 
-  await Product.create(req.body); //  / Items Array with unique product ID, name, price, thumbnail 
-  res.send({ products: await Product.findAll({ items: [{
-    productID: productID, 
-    productTitle: productTitle, 
-    productPrice: productPrice,
-  }
-  ]}) }); 
+server.post("/cart", async (req, res) => {
+  //create cart item
+  await Product.create(req.body); 
+  const items = await Product.findAll({
+  })
+  res.send({
+    items: items.map((item) => {
+          return {
+            cartItemID: item.productsId,
+            productTitle: item.productTitle,
+            productPrice: item.productPrice,
+            productImage: item.productImage
+          }
+        
+    }),
+  });
 });
 server.put("/cart", async (req, res) => {
   await Product.create(req.body); // PUT to add to current state 
