@@ -3,7 +3,7 @@ const { db, users, Product, wishList } = require("./models/db.js"); //from db.js
 var faker = require("faker");
 
 async function main() {
-  for (let i = 0; i < 2; i += 1) {
+  for (let i = 0; i < 10; i += 1) {
     var Card = faker.helpers.createCard();
     await Product.create({
       value: Card,

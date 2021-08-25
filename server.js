@@ -2,7 +2,15 @@ const server = require("express")();
 server.use(require("body-parser").json());
 server.use(require("cors")());
 const { Connection } = require("pg");
-const { db, users, Product, wishList } = require("./models/db.js"); //from db.js
+const cartItem = require("./models/cartItem.js");
+const {
+  db,
+  users,
+  Product,
+  Wishlist,
+  Cart,
+  CartItem,
+} = require("./models/db.js"); //from db.js
 
 server.get("/", (req, res) => {
   res.send({ hello: "world" });
@@ -28,29 +36,38 @@ server.post("/products", async (req, res) => {
   res.send({ products: await Product.findAll() }); // send back all products
 });
 
-// wishList endpoints with put
-server.post("/wishlist", (res, req) => {
-  const wishList = new wishList(); //from db model
-  wishList.title = req.body.title;
-  wishList.save((err, newWishList) => {
-    if (err) {
-      res.send({ err: "could not create new wishlist item" });
-    } else {
-      res.send(newWishList);
-    }
+// wishList endpoints with post
+server.post("/wishlist", async (res, req) => {
+  await Wishlist.create(req.body);
+  const items = await Wishlist.findAll({});
+
+  res.send({
+    items: items.map((item) => {
+      return {
+        productImage: item.productImage,
+        wishListItemID: item.productsId,
+        productTitle: item.productTitle,
+      };
+    }),
   });
 });
 
-server.get("/wishlist", (res, req) => {
-  wishList.find({}, function (err, wishLists) {
-    res.send(wishLists);
+// map over both tables ??????
+server.get("/wishlist", async (res, req) => {
+  const items = await Wishlist.findAll({});
+  res.send({
+    items: items.map((item) => {
+      return {
+        wishListItemID: item.productsId,
+        productTitle: item.productTitle,
+        WishListUserName: item.userName,
+        productImage: item.productImage,
+      };
+    }),
   });
 });
+
 // Endpoint to add product to a specific wish list
-
-
-
-
 
 // login endpoints
 server.use("/Login", (req, res) => {
@@ -64,38 +81,43 @@ server.post("/Login", (req, res) => {
   });
 });
 
-//Cart endpoints - Any call to endpoint should return newly updated cart
+//Cart endpoints - Edit to calls to endpoint should return newly updated cart
 server.get("/cart", async (req, res) => {
-  const items = await Product.findAll({
-    })
-    res.send({
-      items: items.map((item) => {
-            return {
-              cartItemID: item.productsId,
-              productTitle: item.productTitle,
-              productPrice: item.productPrice,
-              productImage: item.productImage
-            }  
-      }),
-    });
-});
-server.post("/cart", async (req, res) => {
-  //create cart item
-  await Product.create(req.body); 
-  const items = await Product.findAll({
-  })
+  const items = await Cart.findOne({
+    include: [{ model: CartItem, include: [{ model: Product }] }], //Get cart items + products items
+  });
   res.send({
-    items: items.map((item) => {
-          return {
-            cartItemID: item.productsId,
-            productTitle: item.productTitle,
-            productPrice: item.productPrice,
-            productImage: item.productImage
-          }
-        
-    }),
+    items: items,
   });
 });
+
+server.post("/cart", async (req, res) => {
+  //
+  let existingCart = await Cart.findOne(); // find // modify to use userID
+  if (!existingCart) {
+    existingCart = await Cart.create(); // create cart in DB
+  }
+  await CartItem.create({
+    cartID: existingCart.cartID,
+    productID: req.body.productID,
+  });
+  res.send({ success: true }); //for front end, required to send back something
+
+  // await Product.create(req.body);
+  // const items = await Product.findAll({});
+
+  // res.send({
+  //   items: items.map((item) => {
+  //     return {
+  //       cartItemID: item.productsId,
+  //       productTitle: item.productTitle,
+  //       productPrice: item.productPrice,
+  //       productImage: item.productImage,
+  //     };
+  //   }),
+  // });
+});
+
 server.put("/cart", async (req, res) => {
   await Product.create(req.body); // PUT to add to current state 
   res.send({ products: await Product.findAll() }); // send back all products

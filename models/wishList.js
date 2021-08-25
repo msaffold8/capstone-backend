@@ -1,14 +1,22 @@
-// User table model
+// Wishlist table model
 
 const DT = require("sequelize").DataTypes;
 
 module.exports = (db) => {
-  return db.define("wishList", {
+  return db.define("Wishlist", {
     wishListId: { type: DT.INTEGER, primaryKey: true, autoIncrement: true },
-    wishListUserID: { type: DT.INTEGER, ref: "User" }, // Relationship to user data / connect unique userID to Wishlist
     wishListTitle: DT.STRING,
-    WishListProduct: { type: DT.INTEGER, ref: "Product" }, // Relationship to product data / connect unique product ID to Wishlist
+    WishListProductID: { type: DT.INTEGER, ref: "wishListProduct" },
+    WishListProduct: { type: DT.STRING, ref: "Product" },
+    wishListUserID: { type: DT.INTEGER, ref: "wishListUser" },
+    WishListUserName: { type: DT.STRING, ref: "User" },
   });
 };
 
+// Wishlist needs to know -
+// who the user is
+// what product is in their wishlist
 //set one to many relationship to => many to many
+
+// row represent product on wishlist
+// wishlisttopruct - wishListId product id  then rows
